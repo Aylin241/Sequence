@@ -1,0 +1,61 @@
+--SEQUENCE
+CREATE SEQUENCE seq_name
+start with 1 --startwert
+increment by 1 --Schrittgröße
+maxvalue 9999 --obere grenze
+cyle | nocyle --nach erreichen max, wieder min anfangen
+cache | nocache --wie viele Schlüsselwerte im Hauptspeicher
+
+--LÖSCHEN SEQUENCE
+DROP SEQUENCE seq_name;
+
+--ÄNDERN SEQUENCE
+ALTER SEQUENCE seq_name
+--hier;
+
+--TABELLEN MIT SEQUENCE erstellen
+CREATE TABLE PERSON (pnr number(6) generated always AS IDENTITY--manuelle Eingaben sind nicht zulässig
+	start with 1 
+	increment by 1
+	maxvalue 99999
+	nocycle);
+	
+--EINFÜGEN MIT SEQUENCE
+insert into person(pnr, name, kuerzel)
+values(emp_seq.NEXTVAL, 'MUELLER', 'HUGO'); --nextval liefert den nächsten Wert der SEQUENCE
+
+insert into adresse(adrnr, pnr, ort)
+values(adr_seq.NEXTVAL, emp_seq.CURRVAL, 'TRIER'); --currval liefert den aktuellen Wert der Sequence
+	
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+--Legen Sie eine Sequenz DOZ_SEQ an mit Start bei 1000. 
+Create sequence doz_seq
+start with 1000;
+
+
+--Sequence mit Startwert 15 -> die Fachbereichnr der Tabelle "Fachbereich" nur noch über eine Sequenz befüllen
+Create Sequence fachb_seq
+start with 15;
+--TRIGGER
+create or replace trigger fachb_i
+before insert or update on fachbereich
+for each row
+begin
+	:new.fachbereichnr := fachb_seq.nextval;
+end;
+/
+
+
+
+--Sequence erstellen, Trigger erstellen- die nur Werte der Sequenz wählt
+Create Sequence student_seq
+start with 9000;
+--Trigger
+Create or Replace Trigger matrikelnr_trigger
+before insert or update of matrikelnr on studentische_person
+for each row
+begin
+	:new.matrikelnr := student_seq.nextval;
+end;
+/
